@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, Alert } from 'react-native';
 import { Constants, MapView, Location, Permissions } from 'expo';
+import SocketIOClient from 'socket.io-client';
 
 export default class App extends Component {
   constructor(props) {
@@ -9,11 +10,15 @@ export default class App extends Component {
       locationResult: null,
       location: {coords: { latitude: 37.78825, longitude: -122.4324}},
     };
+    this.socket = SocketIOClient('http://localhost:3000');
+    socket.on('novo usuario', (usuario) => { 
+      Alert.alert('entrou', usuario);
+    })
   }
   
 
   componentDidMount() {
-    Alert.alert('entrou');
+    socket.emit('novo cliente', 'Hello world!');
     this._getLocationAsync();
   }
 
@@ -35,7 +40,12 @@ export default class App extends Component {
       <View style={styles.container}>
         <MapView
           style={styles.map}
-          region={{ latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }}
+          region={{ 
+            latitude: this.state.location.coords.latitude, 
+            longitude: this.state.location.coords.longitude, 
+            latitudeDelta: 0.0922, 
+            longitudeDelta: 0.0421 
+          }}
         >
           <MapView.Marker
             coordinate={this.state.location.coords}
